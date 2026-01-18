@@ -1,25 +1,28 @@
 (function () {
-  // Codex AEO - STAGING DEBUG BUILD
-  // Purpose: guarantee JSON-LD injection so we can validate the install pipeline end-to-end.
+  function inject() {
+    // remove duplicates
+    document.querySelectorAll('#codex-aeo-ldjson').forEach(n => n.remove());
 
-  console.log("Codex AEO: aeo.js running - injecting JSON-LD");
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Codex AEO",
+      "url": "https://codex-aeo-co.com"
+    };
 
-  // Avoid duplicates on reload
-  document.querySelectorAll('script[data-codex-aeo="injected"]').forEach(n => n.remove());
+    const s = document.createElement("script");
+    s.type = "application/ld+json";
+    s.id = "codex-aeo-ldjson";
+    s.textContent = JSON.stringify(schema);
+    document.head.appendChild(s);
 
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Codex AEO",
-    "url": "https://codex-aeo-co.com",
-    "sameAs": []
-  };
+    console.log("Codex AEO: injected ld+json");
+  }
 
-  const s = document.createElement("script");
-  s.type = "application/ld+json";
-  s.setAttribute("data-codex-aeo", "injected");
-  s.textContent = JSON.stringify(schema);
-  document.head.appendChild(s);
-
-  console.log("Codex AEO: JSON-LD injected");
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", inject);
+  } else {
+    inject();
+  }
 })();
+
